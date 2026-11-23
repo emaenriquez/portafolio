@@ -4,31 +4,31 @@ export interface NavLink {
 }
 
 export const siteConfig = {
-  name: 'Maria',
-  title: 'Maria - Product designer portfolio',
+  name: 'Emanuel',
+  title: 'Emanuel Enriquez - Desarrollador Full Stack',
   description:
-    'Maria is a product designer who turns dense workflows and fuzzy requirements into clear, trustworthy digital products. Selected work, case studies, and resume.',
-  siteUrl: 'https://maria.xocoweb.workers.dev',
-  language: 'en',
-  locale: 'en_US',
-  dateLocale: 'en-US',
+    'Emanuel Enriquez es Desarrollador Full Stack con más de 1.5 años de experiencia construyendo productos digitales completos, desde la base de datos hasta la interfaz. Proyectos y trayectoria.',
+  siteUrl: 'https://example.com',
+  language: 'es',
+  locale: 'es_AR',
+  dateLocale: 'es-AR',
   socialImage: '/og-image.png',
 
   author: {
-    name: 'Maria Ionescu',
-    role: 'Product Designer',
-    location: 'Lisbon, Portugal',
-    email: 'hello@example.com',
+    name: 'Emanuel Enriquez',
+    role: 'Desarrollador Full Stack',
+    location: 'Argentina',
+    email: 'emaenriquez1985@gmail.com',
   },
 
   /** The pill above the homepage headline. Set `enabled: false` to remove it. */
   availability: {
     enabled: true,
-    label: 'Available for new projects from January 2027',
+    label: 'Disponible para nuevos proyectos',
   },
 
   /** The button at the end of the header and in the mobile menu. */
-  action: { label: 'Get in touch', href: 'mailto:hello@example.com' },
+  action: { label: 'Contacto', href: '/#contacto' },
 
   /** A PDF in `public/`, offered on the resume page. Leave empty to hide the button. */
   resumePdf: '',
@@ -39,21 +39,19 @@ export const siteConfig = {
   },
 
   socials: [
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/' },
-    { label: 'Dribbble', href: 'https://dribbble.com/' },
-    { label: 'Behance', href: 'https://www.behance.net/' },
-    { label: 'Instagram', href: 'https://www.instagram.com/' },
+    { label: 'LinkedIn', href: 'https://linkedin.com/in/emaenriquez' },
+    { label: 'GitHub', href: 'https://github.com/emaenriquez' },
   ] satisfies NavLink[],
 };
 
 export const navigation: NavLink[] = [
-  { label: 'Work', href: '/work/' },
-  { label: 'About', href: '/about/' },
-  { label: 'Resume', href: '/resume/' },
+  { label: 'Proyectos', href: '/#proyectos' },
+  { label: 'Servicios', href: '/#servicios' },
+  { label: 'Contacto', href: '/#contacto' },
 ];
 
 export const legalLinks: NavLink[] = [
-  { label: 'Privacy', href: '/privacy/' },
-  { label: 'Terms', href: '/terms/' },
+  { label: 'Privacidad', href: '/privacy/' },
+  { label: 'Términos', href: '/terms/' },
   { label: 'Cookies', href: '/cookies/' },
 ];

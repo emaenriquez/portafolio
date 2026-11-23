@@ -6,27 +6,28 @@ interface Props {
   frontmatter: {
     title: string;
     description: string;
-    /** Shown as "Last updated", in `YYYY-MM-DD`. */
-    updated: string;
+    /** Shown as "Last updated", in `YYYY-MM-DD`. YAML may parse it as a date. */
+    updated: string | Date;
   };
 }
 
 const { title, description, updated } = Astro.props.frontmatter;
-const updatedDate = new Date(`${updated}T00:00:00Z`);
+const updatedDate = new Date(updated);
+const updatedIso = updatedDate.toISOString().slice(0, 10);
 ---
 
 <BaseLayout title={title} description={description} noindex closing={false}>
   <header class="shell pt-16 sm:pt-24">
     <p class="rise eyebrow">Legal</p>
-    <h1 class="rise mt-6 text-headline" style="--rise-step: 1">
+    <h1 class="rise serif mt-6 text-headline" style="--rise-step: 1">
       {title}
     </h1>
     <p class="rise mt-6 max-w-2xl text-lead text-body" style="--rise-step: 2">
       {description}
     </p>
     <p class="rise mt-4 text-sm text-muted" style="--rise-step: 2">
-      Last updated{' '}
-      <time datetime={updated}>
+      Última actualización{' '}
+      <time datetime={updatedIso}>
         {updatedDate.toLocaleDateString(siteConfig.dateLocale, { dateStyle: 'long', timeZone: 'UTC' })}
       </time>
     </p>

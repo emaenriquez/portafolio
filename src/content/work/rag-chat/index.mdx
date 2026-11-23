@@ -1,0 +1,57 @@
+---
+title: Asistente conversacional con IA que responde sobre tus documentos
+client: RAG Chat
+tagline: Asistente conversacional
+summary: Aplicación web que permite subir documentos y mantener conversaciones contextuales con IA mediante Retrieval-Augmented Generation (RAG).
+year: 2025
+role: Desarrollo Full Stack
+services: [RAG, Google Gemini, PostgreSQL + pgvector, Cloudflare R2]
+how:
+  - >-
+    Los usuarios pueden subir archivos (PDF, TXT, DOCX, entre otros), que se procesan, fragmentan y almacenan como
+    embeddings vectoriales en PostgreSQL con pgvector. Al chatear, el sistema recupera los fragmentos más relevantes
+    del documento y los inyecta como contexto en el prompt, generando respuestas precisas y
+    fundamentadas en la información del usuario.
+  - >-
+    El almacenamiento de archivos se gestiona a través de Cloudflare R2, la API REST está documentada con Swagger y la
+    validación de datos se maneja con Zod.
+highlights:
+  - Carga y procesamiento de PDF, TXT y DOCX
+  - Embeddings con pgvector y respuestas con Gemini
+  - API REST documentada y validación con Zod
+cover: ./cover.png
+coverAlt: iPad con la pantalla de inicio de RAG Chat, que saluda al usuario y ofrece iniciar un nuevo chat
+video: /videos/rag-chat.mp4
+tint: '#f3e3c8'
+order: 2
+featured: true
+url: https://rag-chat-ia.vercel.app/login
+github: https://github.com/emaenriquez/rag-chat-ia
+---
+
+import browser from './browser.png';
+
+<div class="case-copy">
+
+RAG Chat es una aplicación Full Stack que permite subir documentos y mantener conversaciones contextuales con IA mediante Retrieval-Augmented Generation (RAG).
+
+## Stack
+
+- **Frontend:** React.js, React Router, Tailwind CSS y Vite.
+- **Backend:** Node.js, Express 5, TypeScript, Prisma 7, PostgreSQL + pgvector, Google Generative AI (Gemini), Cloudflare R2, Swagger y Zod.
+
+**Estado:** Beta.
+
+> Este proyecto está desplegado pero puede no estar disponible en todo momento. Si querés probarlo, escribime a emaenriquez1985@gmail.com y lo activo para vos.
+
+</div>
+
+<div class="case-media">
+
+<Figure
+  src={browser}
+  alt="Ventana de navegador con el chat de RAG Chat respondiendo una pregunta sobre proyectos a partir de los documentos cargados"
+  caption="El chat recupera los fragmentos relevantes de los documentos y responde con ese contexto."
+/>
+
+</div>

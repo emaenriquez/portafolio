@@ -1,80 +1,71 @@
 export const hero = {
-  greeting: "Hi, I'm Maria.",
-  title: 'I design digital products that',
-  highlight: 'actually make sense.',
-  text: 'Ten-plus years helping teams turn messy problems into clear, useful experiences. Corporations, startups, scrappy independents: if there is a user confused somewhere, I want to fix that.',
-  primary: { label: 'See selected work', href: '/#work' },
-  secondary: { label: 'About me', href: '/about/' },
+  title: 'Desarrollador Full Stack',
+  name: 'Emanuel Enriquez',
+  stack: ['React.js', 'Next.js', 'TypeScript', 'Node.js', 'NestJS', 'PostgreSQL'],
+  text: 'Desarrollador Full Stack + IA con más de 1,5 años de experiencia construyendo productos de punta a punta: bases de datos complejas, APIs en Node.js y NestJS, e interfaces en React. Participé en MVPs y en sistemas de OCR en producción.',
+  primary: { label: 'Contactarme', href: '/#contacto' },
+  secondary: { label: 'Ver proyectos', href: '/#proyectos' },
+};
+
+export const aboutSection = {
+  eyebrow: '01 / Sobre mí',
+  title: 'Construyo productos de punta a punta.',
+  paragraphs: [
+    'Me especializo en conectar bases de datos complejas con interfaces eficientes: React y Next.js del lado del cliente, Node.js y NestJS del lado del servidor, con SQL y NoSQL.',
+    'No solo escribo código limpio: me involucro en la arquitectura completa del producto, desde MVPs complejos hasta la integración de motores de IA. Trabajo con Scrum y me adapto rápido a equipos de producto, diseño y QA.',
+  ],
   facts: [
-    { value: '10+', label: 'years in product design' },
-    { value: '40+', label: 'products shipped' },
-    { value: '12', label: 'design systems built' },
+    { label: 'Basado en', value: 'Argentina' },
+    { label: 'Experiencia', value: '1,5+ años · Full Stack' },
+    { label: 'Formación', value: 'Tecnicatura en Software · UNCUYO' },
+    { label: 'Actualmente', value: 'Disponible para nuevos proyectos' },
   ],
 };
 
+export const experienceSection = {
+  eyebrow: '02 / Experiencia',
+  caption: '2025 — presente',
+};
+
 export const work = {
-  eyebrow: 'Selected work',
-  title: 'Case studies',
-  text: 'A few projects where clarity was the whole job: dense workflows, high stakes, and people who needed the product to get out of the way.',
-  /** How many featured case studies the homepage shows. */
+  eyebrow: 'Proyectos seleccionados',
+  title: 'Proyectos seleccionados',
+  text: 'Tres proyectos donde trabajé de punta a punta: una plataforma HealthTech con IA, un asistente conversacional con RAG y un sistema OCR en producción.',
   limit: 4,
 };
 
 export const services = {
-  eyebrow: 'What I do',
-  title: 'From fuzzy brief to shipped product',
+  eyebrow: '03 / Servicios',
+  title: 'Qué hago',
   items: [
     {
-      icon: 'lightbulb',
-      title: 'Product strategy',
-      text: 'Framing the real problem, mapping what users need first, and deciding what not to build.',
+      title: 'Desarrollo Full Stack',
+      text: 'Features de punta a punta: modelo de datos, API y la interfaz que los consume. Un solo responsable, un producto coherente.',
     },
     {
-      icon: 'workflow',
-      title: 'UX and flows',
-      text: 'Research, journeys, and information architecture for workflows that carry real weight.',
+      title: 'Frontend',
+      text: 'Interfaces en React, Next.js y TypeScript con Tailwind: dashboards, editores y tablas que siguen rápidas con miles de filas.',
     },
     {
-      icon: 'layers',
-      title: 'Design systems',
-      text: 'Tokens, components, and documentation that keep a growing product coherent.',
+      title: 'Backend & Bases de Datos',
+      text: 'APIs en Node.js y NestJS, modelado en PostgreSQL y MongoDB, validación con Zod y documentación con Swagger.',
     },
     {
-      icon: 'pen-tool',
-      title: 'Interface craft',
-      text: 'High-fidelity UI, prototypes, and handoff details that survive contact with engineering.',
+      title: 'IA & Automatización',
+      text: 'Integración de modelos como Gemini, RAG con pgvector, pipelines de OCR y prompt engineering aplicado al producto.',
     },
   ],
 };
 
-export const testimonials = {
-  eyebrow: 'Kind words',
-  title: 'What teams say',
-  items: [
-    {
-      quote:
-        'Maria took a dashboard our users tolerated and made it the part of the product they open first. She asked the questions nobody else on the team was asking.',
-      name: 'Daniel Brooks',
-      role: 'Head of Product, Nextpoint',
-    },
-    {
-      quote:
-        'She has a rare way of making complicated systems feel calm. Our caseworkers stopped asking for training after the redesign shipped.',
-      name: 'Priya Shah',
-      role: 'Director of Operations, b.combs',
-    },
-    {
-      quote:
-        'Equal parts strategist and craftsperson. Every review with Maria left us with fewer screens and a clearer product.',
-      name: 'Lukas Weber',
-      role: 'Founder, Nestara',
-    },
-  ],
+export const contact = {
+  eyebrow: '04 / Contacto',
+  title: 'Construyamos algo bueno.',
+  text: 'Abierto a proyectos freelance y posiciones full time. Contame qué estás construyendo y te respondo en menos de 48 horas.',
 };
 
 export const closing = {
-  eyebrow: "Let's work together",
-  title: 'Got something worth building?',
-  highlight: "Let's talk.",
-  text: 'I take on a few product design engagements each quarter, from a focused audit to a full redesign. Tell me what you are working on.',
+  eyebrow: 'Trabajemos juntos',
+  title: '¿Tenés algo valioso para construir?',
+  highlight: 'Hablemos.',
+  text: 'Estoy disponible para nuevos proyectos y desafíos donde pueda aportar valor técnico y visual desde el primer día. Contame qué estás construyendo.',
 };

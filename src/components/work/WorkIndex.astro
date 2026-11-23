@@ -1,10 +1,12 @@
 ---
-import PageHero from '@/components/ui/PageHero.astro';
+import { Image } from 'astro:assets';
+import SiteFooter from '@/components/chrome/SiteFooter.astro';
+import SiteHeader from '@/components/chrome/SiteHeader.astro';
+import Icon from '@/components/ui/Icon.astro';
 import Pagination from '@/components/work/Pagination.astro';
-import ProjectCard from '@/components/work/ProjectCard.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { breadcrumbs } from '@/lib/schema';
-import { workPageHref, type Project } from '@/lib/work';
+import { projectHref, workPageHref, type Project } from '@/lib/work';
 
 interface Props {
   projects: Project[];
@@ -13,34 +15,160 @@ interface Props {
 }
 
 const { projects, current, total } = Astro.props;
-const title = current > 1 ? `Work, page ${current} of ${total}` : 'Work';
+const title = current > 1 ? `Proyectos, página ${current} de ${total}` : 'Proyectos';
+
+const years = projects.map((project) => project.data.year);
+const first = years.length > 0 ? Math.min(...years) : new Date().getFullYear();
+const last = years.length > 0 ? Math.max(...years) : first;
+const range = first === last ? String(first) : `${first} — ${last}`;
 ---
 
 <BaseLayout
   title={title}
-  description="Selected product design case studies: dashboards, workflow tools, and mobile products, with the problem, the decisions, and the outcome."
+  description="Proyectos seleccionados de desarrollo Full Stack: plataformas HealthTech, productos con IA y aplicaciones web completas."
   prevUrl={current > 1 ? workPageHref(current - 1) : undefined}
   nextUrl={current < total ? workPageHref(current + 1) : undefined}
   structuredData={{
     '@context': 'https://schema.org',
     ...breadcrumbs([
-      { name: 'Home', href: '/' },
-      { name: 'Work', href: '/work/' },
+      { name: 'Inicio', href: '/' },
+      { name: 'Proyectos', href: '/work/' },
     ]),
   }}
+  footer={false}
+  header={false}
 >
-  <PageHero
-    eyebrow={current > 1 ? `Selected work, page ${current}` : 'Selected work'}
-    title="Projects that make complex things feel"
-    highlight="clear and trustworthy."
-  />
+  <div class="page-frame">
+    <SiteHeader />
 
-  <section class="shell mt-16 sm:mt-20" aria-label="Case studies">
-    <div class="grid gap-x-8 gap-y-16 md:grid-cols-2">
-      {projects.map((project, index) => (
-        <ProjectCard project={project} eager={index < 2} headingLevel="h2" />
-      ))}
+    <section class="band pt-10 pb-14 sm:pt-12 sm:pb-16 lg:pt-14" aria-labelledby="work-title">
+      <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
+        <p class="label">Proyectos / {range}</p>
+        <p class="label">{projects.length} proyectos</p>
+      </div>
+
+      <h1 id="work-title" class="display-1 mt-9 max-w-[15ch] sm:mt-12">
+        Productos,
+        <br />
+        en detalle.
+      </h1>
+
+      <p class="mt-6 max-w-[56ch] text-[0.95rem] leading-relaxed text-body">
+        Tres proyectos donde trabajé de punta a punta: una plataforma HealthTech con IA, un asistente conversacional con
+        RAG y un sistema OCR en producción. Acá está el alcance, el stack y las decisiones de cada uno.
+      </p>
+    </section>
+
+    <div>
+      {projects.map((project, index) => {
+        const { title, client, tagline, summary, year, role, services, cover, tint, how, highlights, github, url } =
+          project.data;
+
+        return (
+          <article class="band group border-t border-line py-14 lg:py-16">
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex flex-wrap items-center gap-x-3.5 gap-y-1">
+                <span class="font-mono text-[0.7rem] text-muted">{String(index + 1).padStart(2, '0')}</span>
+                <h2 class="label text-ink">{client}</h2>
+              </div>
+              <span class="label">{year}</span>
+            </div>
+
+            <div class="mt-8 grid gap-10 lg:mt-10 lg:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] lg:items-start lg:gap-14">
+              <div class="min-w-0">
+                <p class="text-[clamp(1.85rem,1.2rem+2vw,2.7rem)] leading-[1.02] font-extrabold tracking-[-0.03em] text-ink">
+                  {tagline ?? title}
+                </p>
+
+                <dl class="mt-7 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-line pt-4">
+                  <div>
+                    <dt class="label">Rol</dt>
+                    <dd class="mt-1.5 text-[0.82rem] leading-relaxed font-semibold text-ink">{role}</dd>
+                  </div>
+                  <div>
+                    <dt class="label">Stack</dt>
+                    <dd class="mt-1.5 text-[0.82rem] leading-relaxed font-semibold text-ink">
+                      {services.slice(0, 3).join(' · ')}
+                    </dd>
+                  </div>
+                </dl>
+
+                <p class="mt-6 max-w-[46ch] text-[0.88rem] leading-relaxed text-body">{summary}</p>
+                {how[0] && <p class="mt-3 max-w-[46ch] text-[0.88rem] leading-relaxed text-muted">{how[0]}</p>}
+
+                {highlights.length > 0 && (
+                  <ul class="mt-6">
+                    {highlights.map((item) => (
+                      <li class="flex items-center gap-2.5 border-b border-line py-2.5 text-[0.8rem] text-body first:border-t">
+                        <span class="size-[5px] flex-none rounded-full bg-ink" aria-hidden="true" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                <div class="mt-7 flex flex-wrap items-center gap-2">
+                  <a
+                    class="btn btn-pill bg-night px-5 text-[0.8rem] font-semibold text-accent hover:bg-night/85"
+                    href={projectHref(project)}
+                  >
+                    Ver caso de estudio
+                    <Icon name="arrow-up-right" class="icon-nudge-diagonal size-4" />
+                  </a>
+
+                  {github && (
+                    <a
+                      class="btn btn-pill border border-line-strong px-4 text-[0.8rem] font-semibold text-ink hover:border-ink hover:bg-transparent"
+                      href={github}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Ver repositorio
+                      <Icon name="arrow-up-right" class="icon-nudge-diagonal size-4" />
+                    </a>
+                  )}
+
+                  {url && (
+                    <a
+                      class="btn btn-pill border border-line-strong px-4 text-[0.8rem] font-semibold text-ink hover:border-ink hover:bg-transparent"
+                      href={url}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Ver demo
+                      <Icon name="arrow-up-right" class="icon-nudge-diagonal size-4" />
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <a
+                class="relative block aspect-4/3 overflow-hidden rounded-[1.25rem] border border-line"
+                style={`background: ${tint}`}
+                href={projectHref(project)}
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                <Image
+                  src={cover}
+                  alt=""
+                  widths={[640, 960, 1280, 1600]}
+                  sizes="(min-width: 64rem) 58vw, 100vw"
+                  quality={90}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  class="absolute inset-0 size-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+                />
+              </a>
+            </div>
+          </article>
+        );
+      })}
     </div>
-    <Pagination current={current} total={total} />
-  </section>
+
+    <div class="band pb-14">
+      <Pagination current={current} total={total} />
+    </div>
+
+    <SiteFooter flush />
+  </div>
 </BaseLayout>

@@ -1,0 +1,135 @@
+---
+interface Props {
+  id: string;
+  variant?: 'cover' | 'content' | 'image' | 'stats' | 'split';
+  background?: string;
+  class?: string;
+}
+
+const { id, variant = 'content', background, class: className } = Astro.props;
+---
+
+<section
+  id={id}
+  class:list={['project-slide', `slide-${variant}`, className]}
+  data-slide={id}
+  style={background ? `background: ${background}` : undefined}
+>
+  <div class="slide-inner">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .project-slide {
+    --slide-nav-space: 4.25rem;
+    height: 100%;
+    width: 100%;
+    flex: 0 0 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    scrollbar-color: color-mix(in oklab, var(--muted) 35%, transparent) transparent;
+    scrollbar-width: thin;
+    position: relative;
+    padding: 2rem;
+    padding-bottom: calc(2rem + var(--slide-nav-space));
+    box-sizing: border-box;
+  }
+
+  .project-slide::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .project-slide::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--muted) 35%, transparent);
+  }
+
+  .slide-inner {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition:
+      opacity 400ms var(--ease-out),
+      transform 400ms var(--ease-out);
+  }
+
+  .project-slide.is-active .slide-inner {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Variante Cover - Hero slide */
+  .slide-cover {
+    background: var(--canvas);
+    text-align: center;
+  }
+
+  .slide-cover .slide-inner {
+    max-width: 900px;
+  }
+
+  /* Variante Content - Texto normal */
+  .slide-content {
+    background: var(--surface);
+  }
+
+  .slide-content .slide-inner {
+    max-width: 800px;
+  }
+
+  /* Variante Image - Imagen destacada */
+  .slide-image {
+    background: var(--surface);
+    padding: 4rem 2rem calc(4rem + var(--slide-nav-space));
+  }
+
+  .slide-image .slide-inner {
+    max-width: 1400px;
+  }
+
+  /* Variante Stats - Para métricas */
+  .slide-stats {
+    background: var(--sunken);
+  }
+
+  .slide-stats .slide-inner {
+    max-width: 1000px;
+  }
+
+  /* Variante Split - Dos columnas */
+  .slide-split {
+    background: var(--surface);
+  }
+
+  .slide-split .slide-inner {
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .project-slide {
+      padding: 1.5rem;
+      padding-bottom: calc(1.5rem + var(--slide-nav-space));
+    }
+
+    .slide-image {
+      padding: 2rem 1.5rem calc(2rem + var(--slide-nav-space));
+    }
+
+    .slide-split .slide-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

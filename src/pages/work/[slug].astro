@@ -3,133 +3,726 @@ import { getImage, Image } from 'astro:assets';
 import { render } from 'astro:content';
 import { mdxComponents } from '@/components/mdx';
 import Icon from '@/components/ui/Icon.astro';
-import NextProject from '@/components/work/NextProject.astro';
+import ImageZoom from '@/components/ui/ImageZoom.astro';
+import ProjectSlide from '@/components/work/ProjectSlide.astro';
+import SlideNavigation from '@/components/work/SlideNavigation.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { caseStudySchema } from '@/lib/schema';
 import { getProjects, type Project } from '@/lib/work';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
-  return projects.map((project, index) => ({
+  return projects.map((project) => ({
     params: { slug: project.id },
-    props: { project, next: projects[(index + 1) % projects.length] },
+    props: { project },
   }));
 }
 
 interface Props {
   project: Project;
-  next: Project;
 }
 
-const { project, next } = Astro.props;
-const { title, client, summary, year, role, services, duration, team, cover, coverAlt, tint, url } = project.data;
+const { project } = Astro.props;
+const { title, client, summary, year, role, services, duration, team, cover, coverAlt, tint, url, github, video, how } =
+  project.data;
 const { Content } = await render(project);
 const share = await getImage({ src: cover, width: 1200, height: 630, fit: 'cover', position: 'top', format: 'png' });
 
+// Obtener todos los proyectos para mostrar en el último slide
+const allProjects = await getProjects();
+// Obtener los siguientes 3 proyectos (o los primeros 3 si estamos cerca del final)
+const otherProjects = allProjects.filter((item) => item.id !== project.id).slice(0, 3);
+
 const meta = [
-  { label: 'Client', value: client },
-  { label: 'Year', value: String(year) },
-  { label: 'Role', value: role },
-  duration && { label: 'Duration', value: duration },
-  team && { label: 'Team', value: team },
+  { label: 'Cliente', value: client },
+  { label: 'Año', value: String(year) },
+  { label: 'Rol', value: role },
+  duration && { label: 'Duración', value: duration },
+  team && { label: 'Equipo', value: team },
 ].filter((item): item is { label: string; value: string } => Boolean(item));
+
+// Número total de slides para la navegación
+const totalSlides = 4;
 ---
 
 <BaseLayout
-  title={`${client} case study`}
+  title={`${client} — Caso de estudio`}
   description={summary}
   image={cover}
   imageAlt={coverAlt}
   type="article"
   structuredData={caseStudySchema(project, share.src)}
+  footer={false}
 >
-  <article style={`--tint: ${tint}`}>
-    <header class="shell pt-12 sm:pt-16">
-      <nav aria-label="Breadcrumb" class="rise">
-        <ol class="flex items-center gap-2 text-sm text-muted">
-          <li>
-            <a class="hover:text-ink" href="/work/">
-              Work
-            </a>
-          </li>
-          <li aria-hidden="true">/</li>
-          <li>
-            <span aria-current="page" class="text-ink">
-              {client}
-            </span>
-          </li>
-        </ol>
-      </nav>
-      <h1 class="rise mt-8 max-w-[22ch] text-headline" style="--rise-step: 1">
-        {title}
-      </h1>
-      <p class="rise mt-6 max-w-2xl text-lead text-body" style="--rise-step: 2">
-        {summary}
-      </p>
+  <SlideNavigation totalSlides={totalSlides} />
 
-      <div class="rise mt-12 grid gap-8 border-t border-line pt-8 lg:grid-cols-[1fr_auto]" style="--rise-step: 3">
-        <dl class="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:flex lg:gap-14">
-          {meta.map((item) => (
-            <div>
-              <dt class="text-sm text-muted">{item.label}</dt>
-              <dd class="mt-1 font-medium">{item.value}</dd>
+  <article style={`--tint: ${tint}`} class="project-slides">
+    <!-- Slide 1: Cover / Hero -->
+    <ProjectSlide id="cover" variant="cover">
+      <div class="cover-grid">
+        <div class="cover-intro">
+          <nav aria-label="Breadcrumb" class="slide-breadcrumb">
+            <a href="/work/">Proyectos</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{client}</span>
+          </nav>
+
+          <h1 class="slide-title">{title}</h1>
+          <p class="slide-lead">{summary}</p>
+        </div>
+
+        <div class="cover-aside">
+          <div class="slide-meta">
+            {meta.map((item) => (
+              <div class="meta-item">
+                <span class="meta-label">{item.label}</span>
+                <span class="meta-value">{item.value}</span>
+              </div>
+            ))}
+          </div>
+
+          {services.length > 0 && (
+            <ul class="slide-services">
+              {services.map((service) => (
+                <li class="chip">{service}</li>
+              ))}
+            </ul>
+          )}
+
+          {(url || github) && (
+            <div class="slide-actions">
+              {url && (
+                <a class="btn btn-accent btn-lg" href={url} target="_blank" rel="noopener">
+                  Ver demo
+                  <Icon name="arrow-up-right" class="icon-nudge-diagonal size-5" />
+                </a>
+              )}
+              {github && (
+                <a class="btn btn-ghost btn-lg" href={github} target="_blank" rel="noopener">
+                  Ver repositorio
+                  <Icon name="arrow-up-right" class="icon-nudge-diagonal size-5" />
+                </a>
+              )}
             </div>
-          ))}
-        </dl>
-        {url && (
-          <a class="btn btn-ghost btn-sm self-start" href={url} rel="noopener">
-            Visit {client}
-            <Icon name="arrow-up-right" class="icon-nudge-diagonal size-4" />
-          </a>
+          )}
+        </div>
+      </div>
+    </ProjectSlide>
+
+    <!-- Slide 2: Showcase media and how it works -->
+    <ProjectSlide id="showcase" variant="image" background="color-mix(in oklab, var(--tint) 14%, var(--surface))">
+      <div class:list={['showcase-split', how.length > 0 && 'has-copy']}>
+        <div class="slide-image-wrapper">
+          {video ? (
+            <video
+              class="slide-showcase-image"
+              controls
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              poster={cover.src}
+              aria-label={coverAlt}
+            >
+              <source src={video} type="video/mp4" />
+            </video>
+          ) : (
+            <button
+              type="button"
+              class="slide-zoom"
+              data-zoom
+              data-zoom-src={cover.src}
+              data-zoom-alt={coverAlt}
+              aria-label={`Ampliar imagen: ${coverAlt}`}
+            >
+              <Image
+                src={cover}
+                alt={coverAlt}
+                widths={[1200, 1600, 2000, 2400]}
+                sizes="90vw"
+                quality={95}
+                loading="eager"
+                class="slide-showcase-image"
+              />
+            </button>
+          )}
+        </div>
+
+        {how.length > 0 && (
+          <div class="showcase-copy">
+            <h2 class="showcase-title">Cómo funciona</h2>
+            {how.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
         )}
       </div>
+    </ProjectSlide>
 
-      {services.length > 0 && (
-        <ul class="mt-6 flex flex-wrap gap-1.5" aria-label="Services">
-          {services.map((service) => (
-            <li class="chip">{service}</li>
-          ))}
-        </ul>
-      )}
-    </header>
-
-    <div class="shell mt-12 sm:mt-16">
-      <div class="tint-panel overflow-hidden rounded-card p-[4%] sm:p-[6%]">
-        <Image
-          src={cover}
-          alt={coverAlt}
-          widths={[800, 1200, 1600, 2400, 3200]}
-          sizes="(min-width: 80rem) 68rem, 90vw"
-          quality={90}
-          loading="eager"
-          fetchpriority="high"
-          class="shot w-full"
-        />
-      </div>
-    </div>
-
-    <div class="shell mt-16 sm:mt-24">
-      <div class="prose case-prose">
+    <!-- Slide 3: Content / Problem & Approach -->
+    <ProjectSlide id="story" variant="content">
+      <div class="prose slide-prose">
         <Content components={mdxComponents} />
       </div>
-    </div>
+    </ProjectSlide>
+
+    <!-- Slide 4: More Projects -->
+    <ProjectSlide id="outcome" variant="stats">
+      <div class="outcome-content">
+        <h2 class="outcome-title">Más proyectos</h2>
+
+        <div class="projects-grid">
+          {otherProjects.map((proj) => (
+            <a href={`/work/${proj.id}/`} class="project-card-mini">
+              <div class="card-image" style={`background-color: ${proj.data.tint}20`}>
+                <Image
+                  src={proj.data.cover}
+                  alt={proj.data.coverAlt}
+                  widths={[400, 600, 800]}
+                  sizes="(min-width: 768px) 240px, 120px"
+                  quality={85}
+                  class="card-cover"
+                />
+              </div>
+              <div class="card-content">
+                <h3 class="card-title">{proj.data.client}</h3>
+                <p class="card-summary">{proj.data.summary}</p>
+                <span class="card-cta">
+                  Ver proyecto
+                  <Icon name="arrow-right" class="size-4" />
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <div class="outcome-actions">
+          <a href="/work/" class="btn btn-ghost btn-lg">
+            Ver todos los proyectos
+            <Icon name="arrow-right" class="size-5" />
+          </a>
+        </div>
+      </div>
+    </ProjectSlide>
   </article>
 
-  {next.id !== project.id && <NextProject project={next} />}
+  <ImageZoom label={`Imagen ampliada de ${client}`} />
 </BaseLayout>
 
 <style>
-  .case-prose > :global(*) {
-    margin-inline: auto;
+  .project-slides {
+    height: calc(100vh - var(--header-h));
+    height: calc(100dvh - var(--header-h));
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: row;
   }
 
-  .case-prose > :global(*:first-child) {
+  @media (prefers-reduced-motion: no-preference) {
+    .project-slides {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Ocultar scrollbar pero mantener funcionalidad */
+  .project-slides::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-slides {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Slide Cover */
+  .cover-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(21rem, 0.75fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+    text-align: left;
+  }
+
+  .slide-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: clamp(1.25rem, 3vh, 2rem);
+    color: var(--muted);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .slide-breadcrumb a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .slide-breadcrumb a:hover {
+    color: var(--ink);
+  }
+
+  .slide-title {
+    max-width: 19ch;
+    margin: 0 0 1.25rem;
+    font-size: clamp(2rem, 1.2rem + 2.6vw, 3.35rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  .slide-lead {
+    max-width: 42ch;
+    margin: 0;
+    color: var(--body);
+    font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem);
+    line-height: 1.6;
+  }
+
+  .cover-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    background: var(--surface);
+  }
+
+  .slide-meta {
+    display: grid;
+    margin: 0;
+    padding: 0;
+  }
+
+  .meta-item {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: baseline;
+    padding-block: 0.6rem;
+    border-top: 1px solid var(--line);
+    text-align: left;
+  }
+
+  .meta-item:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .meta-item:last-child {
+    padding-bottom: 1rem;
+  }
+
+  .meta-label {
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .meta-value {
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .slide-services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .slide-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-start;
+    margin: 0;
+  }
+
+  /* Slide Image */
+  .showcase-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+    align-items: center;
+  }
+
+  .showcase-copy {
+    max-width: 46ch;
+  }
+
+  .showcase-title {
+    margin: 0 0 0.9rem;
+    color: var(--ink);
+    font-size: clamp(1.5rem, 1.2rem + 0.9vw, 2rem);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .showcase-copy p {
+    margin: 0;
+    color: var(--body);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .showcase-copy p + p {
+    margin-top: 0.9rem;
+  }
+
+  .slide-image-wrapper {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: color-mix(in oklab, var(--tint) 12%, var(--surface));
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.15),
+      0 0 0 1px var(--line);
+  }
+
+  .slide-zoom {
+    display: block;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .slide-zoom:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: -3px;
+  }
+
+  .slide-showcase-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - var(--header-h) - 12.25rem);
+  }
+
+  @media (min-width: 900px) {
+    .showcase-split.has-copy {
+      grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+      gap: clamp(2rem, 4vw, 3.5rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .slide-showcase-image {
+      animation: image-reveal 700ms var(--ease-out) both;
+    }
+  }
+
+  @keyframes image-reveal {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Slide Content */
+  .slide-prose {
+    max-width: 66ch;
+    margin: 0 auto;
+  }
+
+  .slide-prose :global(.case-copy > :first-child) {
     margin-top: 0;
   }
 
-  .case-prose > :global(p:first-of-type) {
+  .slide-prose :global(h2) {
+    margin-top: 2.25rem;
+    margin-bottom: 0.9rem;
     color: var(--ink);
-    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.45rem);
+    font-size: clamp(1.35rem, 1.1rem + 0.7vw, 1.65rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+  }
+
+  .slide-prose :global(p),
+  .slide-prose :global(li) {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--body);
+  }
+
+  .slide-prose :global(p) {
+    margin: 1rem 0;
+  }
+
+  .slide-prose :global(blockquote) {
+    margin: 1.75rem 0;
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    border: 0;
+    border-left: 2px solid var(--accent);
+    border-radius: 0;
+    background: transparent;
+    font-size: 1rem;
+    font-style: normal;
+    line-height: 1.6;
+  }
+
+  .slide-prose :global(blockquote p) {
+    margin: 0;
+    font: inherit;
+    color: var(--ink);
+  }
+
+  .slide-prose :global(blockquote p::before),
+  .slide-prose :global(blockquote p::after) {
+    content: none;
+  }
+
+  .slide-prose :global(.case-media) {
+    margin-top: 1.75rem;
+  }
+
+  .slide-prose :global(.case-media figure) {
+    margin: 0;
+  }
+
+  .slide-prose :global(a) {
+    overflow-wrap: anywhere;
+  }
+
+  /* Solution Features */
+  .solution-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    padding: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    transition: border-color 180ms var(--ease-out);
+  }
+
+  .feature-card:hover {
+    border-color: var(--line-strong);
+  }
+
+  /* Outcome */
+  .outcome-content {
+    max-width: 44rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .outcome-title {
+    margin: 0 0 2rem;
+    font-size: clamp(1.8rem, 1.3rem + 2.4vw, 2.9rem);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .projects-grid {
+    display: grid;
+    gap: 1rem;
+    margin: 0 auto;
+  }
+
+  .project-card-mini {
+    display: grid;
+    grid-template-columns: minmax(9rem, 35%) minmax(0, 1fr);
+    align-items: stretch;
+    min-height: 9.5rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+    overflow: hidden;
+    text-decoration: none;
+    transition: border-color 200ms var(--ease-out);
+  }
+
+  .project-card-mini:hover {
+    border-color: var(--line-strong);
+  }
+
+  .project-card-mini:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  .card-image {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 9.5rem;
+    overflow: hidden;
+  }
+
+  .card-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .project-card-mini:hover .card-cover {
+      transform: scale(1.03);
+    }
+
+    .card-cover {
+      transition: transform 500ms var(--ease-out);
+    }
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .card-title {
+    margin: 0;
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .card-summary {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
     line-height: 1.55;
+  }
+
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    color: var(--accent-ink);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .outcome-actions {
+    margin-top: 1.75rem;
+    text-align: center;
+  }
+
+  .next-project-preview {
+    padding-top: 3rem;
+    border-top: 1px solid var(--line);
+  }
+
+  /* Utilities */
+  .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+
+  /* Desktop case-study layout */
+  @media (min-width: 1024px) {
+    :global(.project-slide.slide-content .slide-inner) {
+      max-width: 1120px;
+    }
+
+    .slide-prose {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+      max-width: none;
+    }
+
+    .slide-prose :global(.case-media) {
+      margin-top: 0;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .cover-grid {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .slide-breadcrumb {
+      margin-bottom: 1rem;
+    }
+
+    .slide-title {
+      max-width: 18ch;
+      margin-bottom: 1rem;
+      font-size: clamp(2rem, 8vw, 2.5rem);
+    }
+
+    .slide-lead {
+      max-width: 44ch;
+    }
+
+    .cover-aside {
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .slide-meta {
+      gap: 0;
+    }
+
+    .solution-visual {
+      margin-top: 2rem;
+    }
+
+    .slide-showcase-image {
+      max-height: calc(100dvh - var(--header-h) - 8.25rem);
+    }
+
+    .project-card-mini {
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+      min-height: 8rem;
+    }
+
+    .card-image {
+      min-height: 8rem;
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    .card-summary {
+      -webkit-line-clamp: 2;
+    }
   }
 </style>

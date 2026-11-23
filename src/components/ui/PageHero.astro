@@ -2,7 +2,7 @@
 interface Props {
   eyebrow?: string;
   title: string;
-  /** Set in the serif italic after the title. */
+  /** Highlighted with the amber mark after the title. */
   highlight?: string;
   text?: string;
 }
@@ -10,15 +10,15 @@ interface Props {
 const { eyebrow, title, highlight, text } = Astro.props;
 ---
 
-<header class="shell pt-16 sm:pt-24">
+<header class="shell pt-12 sm:pt-16">
   {eyebrow && <p class="rise eyebrow">{eyebrow}</p>}
-  <h1 class="rise mt-6 max-w-[20ch] text-headline" style="--rise-step: 1">
+  <h1 class="rise serif mt-6 max-w-[19ch] text-headline" style="--rise-step: 1">
     {title}
     {highlight && ' '}
-    {highlight && <span class="serif">{highlight}</span>}
+    {highlight && <span class="mark">{highlight}</span>}
   </h1>
   {text && (
-    <p class="rise mt-6 max-w-2xl text-lead text-body" style="--rise-step: 2">
+    <p class="rise mt-6 max-w-[56ch] text-lead text-body" style="--rise-step: 2">
       {text}
     </p>
   )}

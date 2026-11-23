@@ -1,0 +1,88 @@
+---
+import { Image } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import { projectHref, type Project } from '@/lib/work';
+
+interface Props {
+  project: Project;
+  /** Alternates the visual to the right on even rows. */
+  reverse?: boolean;
+  /** The first rows on a page load eagerly. */
+  eager?: boolean;
+}
+
+const { project, reverse = false, eager = false } = Astro.props;
+const { title, client, year, summary, services, cover, coverAlt, tint } = project.data;
+---
+
+<article class="group relative grid items-center gap-7 lg:grid-cols-[minmax(0,1.28fr)_minmax(0,0.72fr)] lg:gap-14">
+  <div class:list={['relative', reverse && 'lg:order-2']}>
+    <div
+      class="tint-panel relative aspect-4/3 overflow-hidden rounded-card border border-line"
+      style={`--tint: ${tint}`}
+    >
+      <Image
+        src={cover}
+        alt={coverAlt}
+        widths={[640, 960, 1280, 1600]}
+        sizes="(min-width: 80rem) 50rem, (min-width: 64rem) 56vw, 100vw"
+        quality={90}
+        loading={eager ? 'eager' : 'lazy'}
+        class="absolute inset-0 size-full object-cover object-top"
+      />
+    </div>
+  </div>
+
+  <div class:list={['min-w-0', reverse && 'lg:order-1']}>
+    <p class="eyebrow">
+      {client} · {year}
+    </p>
+
+    <h3 class="serif mt-3 max-w-[22ch] text-[clamp(1.5rem,1.15rem+1.1vw,2.05rem)] leading-[1.12] text-ink">
+      <a href={projectHref(project)} class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">
+        {title}
+      </a>
+    </h3>
+
+    <p class="mt-4 max-w-[42ch] text-body">{summary}</p>
+
+    {services.length > 0 && (
+      <ul class="mt-5 flex flex-wrap gap-1.5" aria-label="Tecnologías">
+        {services.slice(0, 4).map((service) => (
+          <li class="chip">{service}</li>
+        ))}
+      </ul>
+    )}
+
+    <p class="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+      Ver caso de estudio
+      <Icon name="arrow-right" class="icon-nudge size-4 text-muted" />
+    </p>
+  </div>
+</article>
+
+<style>
+  .group:has(a:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: 10px;
+    border-radius: var(--radius-card);
+  }
+
+  @media (hover: hover) {
+    .group:hover .tint-panel {
+      border-color: var(--line-strong);
+    }
+
+    .group:hover .icon-nudge {
+      transform: translateX(3px);
+    }
+  }
+
+  .tint-panel {
+    transition: border-color 200ms var(--ease-out);
+  }
+
+  .icon-nudge {
+    transition: transform 200ms var(--ease-out);
+  }
+</style>

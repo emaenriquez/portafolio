@@ -4,25 +4,22 @@ import { navigation } from '@/config/site';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
-<BaseLayout
-  title="Page not found"
-  description="The page you were looking for could not be found."
-  noindex
-  closing={false}
->
+<BaseLayout title="Página no encontrada" description="La página que buscabas no existe." noindex closing={false}>
   <section class="shell grid min-h-[70vh] place-items-center py-20 text-center">
     <div>
-      <p class="rise font-serif text-[clamp(6rem,4rem+10vw,12rem)] leading-none text-muted italic">404</p>
-      <h1 class="rise mt-4 text-section" style="--rise-step: 1">
-        This page took a different path.
+      <p class="rise font-serif text-[clamp(6rem,4rem+10vw,12rem)] leading-none text-line-strong" aria-hidden="true">
+        404
+      </p>
+      <h1 class="rise serif mt-4 text-section" style="--rise-step: 1">
+        Esta página tomó otro camino.
       </h1>
       <p class="rise mx-auto mt-5 max-w-md text-lead text-muted" style="--rise-step: 2">
-        The link may be outdated, or the page may have moved. Try one of these instead.
+        Puede que el enlace esté desactualizado o que la página se haya movido. Probá con uno de estos enlaces.
       </p>
       <div class="rise mt-10 flex flex-wrap justify-center gap-3" style="--rise-step: 3">
         <a class="btn btn-primary" href="/">
           <Icon name="arrow-left" class="size-4" />
-          Back home
+          Volver al inicio
         </a>
         {navigation.map((link) => (
           <a class="btn btn-ghost" href={link.href}>

@@ -1,16 +1,105 @@
 ---
 interface Props {
   items: { value: string; label: string }[];
+  animated?: boolean;
 }
 
-const { items } = Astro.props;
+const { items, animated = true } = Astro.props;
 ---
 
-<dl class="not-prose mx-auto grid max-w-[44rem] gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3">
-  {items.map((item) => (
-    <div class="flex flex-col-reverse gap-2 bg-surface p-6">
-      <dt class="text-[0.95rem] text-muted">{item.label}</dt>
-      <dd class="text-section">{item.value}</dd>
-    </div>
-  ))}
-</dl>
+<div class="stats-container" data-stats-animated={animated}>
+  <dl class="stats-grid not-prose mx-auto grid max-w-[44rem] gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-3">
+    {items.map((item) => (
+      <div class="stat-card flex flex-col-reverse gap-2 bg-surface p-6">
+        <dt class="text-[0.95rem] text-muted">{item.label}</dt>
+        <dd class="stat-value serif text-section" data-stat-target={item.value}>
+          {animated ? '0' : item.value}
+        </dd>
+      </div>
+    ))}
+  </dl>
+</div>
+
+<style>
+  .stat-value {
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+</style>
+
+<script>
+  function initStats() {
+    const statsContainers = document.querySelectorAll('[data-stats-animated="true"]') as NodeListOf<HTMLElement>;
+
+    if (!statsContainers.length) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const animateValue = (element: HTMLElement, targetStr: string) => {
+      // Extraer el número y el formato
+      const match = targetStr.match(/^([+-]?\d+(?:\.\d+)?)\s*(%|days?|months?|weeks?)?/i);
+      if (!match || reduceMotion) {
+        element.textContent = targetStr;
+        return;
+      }
+
+      const target = parseFloat(match[1]);
+      const suffix = match[2] || '';
+      const hasDecimal = targetStr.includes('.');
+      const duration = 2000;
+      const steps = 60;
+      const increment = target / steps;
+      let current = 0;
+
+      const timer = setInterval(() => {
+        current = Math.min(current + increment, target);
+
+        if (hasDecimal) {
+          element.textContent = current.toFixed(1) + suffix;
+        } else {
+          element.textContent = Math.round(current) + suffix;
+        }
+
+        if (current >= target) {
+          element.textContent = targetStr;
+          clearInterval(timer);
+        }
+      }, duration / steps);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const container = entry.target as HTMLElement;
+            container.classList.add('is-visible');
+
+            const values = container.querySelectorAll('[data-stat-target]') as NodeListOf<HTMLElement>;
+            values.forEach((value) => {
+              const target = value.dataset.statTarget;
+              if (target) {
+                animateValue(value, target);
+              }
+            });
+
+            observer.unobserve(container);
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px 0px -10% 0px',
+      },
+    );
+
+    statsContainers.forEach((container) => observer.observe(container));
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStats);
+  } else {
+    initStats();
+  }
+
+  document.addEventListener('astro:after-swap', initStats);
+</script>

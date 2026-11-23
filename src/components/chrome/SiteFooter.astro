@@ -1,141 +1,168 @@
 ---
 import Icon from '@/components/ui/Icon.astro';
-import Logomark from '@/components/ui/Logomark.astro';
 import { closing } from '@/config/home';
 import { legalLinks, navigation, siteConfig } from '@/config/site';
 import { socialIcon } from '@/lib/socials';
 
 interface Props {
   closing?: boolean;
+  /** Drops the top margin when the footer closes a section directly. */
+  flush?: boolean;
 }
 
-const { closing: showClosing = true } = Astro.props;
+const { closing: showClosing = true, flush = false } = Astro.props;
 const { email } = siteConfig.author;
+const brand = siteConfig.author.name.replace(/\s+/g, '').toUpperCase();
 const year = new Date().getFullYear();
 ---
 
 {showClosing && (
-  <section class="shell mt-24 sm:mt-32" aria-labelledby="closing-title">
-    <div class="relative overflow-hidden rounded-[2rem] bg-night px-6 py-14 text-night-ink sm:px-12 sm:py-20 lg:px-20 lg:py-24">
-      <div class="closing-grid" aria-hidden="true" />
-      <div class="relative">
-        <p class="eyebrow text-night-muted">{closing.eyebrow}</p>
-        <h2 id="closing-title" class="mt-6 max-w-[18ch] text-headline">
-          {closing.title} <span class="serif text-accent">{closing.highlight}</span>
-        </h2>
-        <p class="mt-6 max-w-xl text-lead text-night-muted">{closing.text}</p>
-        <div class="mt-10 flex flex-wrap items-center gap-3">
-          <a class="btn btn-accent" href={`mailto:${email}`}>
-            {email}
-            <Icon name="arrow-up-right" class="icon-nudge-diagonal size-4" />
-          </a>
-          <a class="btn text-night-ink underline-offset-4 hover:underline" href="/resume/">
-            View resume
-          </a>
-        </div>
+  <section class="shell mt-20 sm:mt-28" aria-labelledby="closing-title">
+    <div class="bg-accent band rounded-[1.25rem] py-12 text-[#111111] sm:rounded-[1.5rem] sm:py-16 lg:py-20">
+      <p class="label text-[#111111]/55">{closing.eyebrow}</p>
+      <h2 id="closing-title" class="display-2 mt-4 max-w-[20ch]">
+        {closing.title} {closing.highlight}
+      </h2>
+      <p class="mt-5 max-w-[46ch] text-[0.92rem] leading-relaxed text-[#111111]/70">{closing.text}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <a class="btn btn-pill bg-[#111111] px-6 text-white hover:bg-[#111111]/85" href={`mailto:${email}`}>
+          <span class="sm:hidden">Escribime</span>
+          <span class="hidden sm:inline">{email}</span>
+          <Icon name="arrow-up-right" class="icon-nudge-diagonal size-4" />
+        </a>
+        <a
+          class="text-[0.85rem] font-medium underline decoration-[#111111]/35 underline-offset-4 hover:decoration-[#111111]"
+          href="/#proyectos"
+        >
+          Ver proyectos
+        </a>
       </div>
     </div>
   </section>
 )}
 
-<footer class="mt-24 border-t border-line sm:mt-32">
-  <div class="shell grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
-    <div>
-      <a href="/" class="inline-flex items-center gap-2.5 text-[1.15rem] font-semibold tracking-[-0.03em]">
-        <Logomark />
-        <span>{siteConfig.name}</span>
-        <span class="sr-only">, home</span>
+<footer class:list={['bg-night text-night-ink', flush ? 'mt-0' : 'mt-20 sm:mt-28']}>
+  <div class="band py-12 sm:py-14">
+    <div class="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+      <a href="/" class="brand text-white">
+        <span aria-hidden="true">&lt;{brand}&gt;</span>
+        <span class="sr-only">{siteConfig.author.name}, inicio</span>
       </a>
-      <p class="mt-5 max-w-xs text-muted">
-        {siteConfig.author.role} based in {siteConfig.author.location}. Working with teams worldwide.
-      </p>
-    </div>
 
-    <nav aria-labelledby="footer-pages">
-      <h2 id="footer-pages" class="text-sm font-medium text-muted">
-        Pages
-      </h2>
-      <ul class="mt-4 grid gap-2.5">
-        <li>
-          <a class="footer-link" href="/">
-            Home
-          </a>
-        </li>
-        {navigation.map((link) => (
+      <nav aria-label="Pie de página">
+        <ul class="flex flex-wrap items-center gap-x-7 gap-y-3">
           <li>
-            <a class="footer-link" href={link.href}>
-              {link.label}
+            <a class="footer-link" href="/">
+              Inicio
             </a>
           </li>
-        ))}
-      </ul>
-    </nav>
+          {navigation.map((link) => (
+            <li>
+              <a class="footer-link" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-    <nav aria-labelledby="footer-elsewhere">
-      <h2 id="footer-elsewhere" class="text-sm font-medium text-muted">
-        Elsewhere
-      </h2>
-      <ul class="mt-4 grid gap-2.5">
+      <ul class="flex items-center gap-2.5">
         {siteConfig.socials.map((social) => (
           <li>
-            <a class="footer-link inline-flex items-center gap-2.5" href={social.href} rel="me noopener">
-              <Icon name={socialIcon(social.label)} class="size-3.5 text-muted" />
-              {social.label}
+            <a class="social-dot" href={social.href} rel="me noopener" aria-label={social.label} title={social.label}>
+              <Icon name={socialIcon(social.label)} class="size-3.5 text-white" />
             </a>
           </li>
         ))}
+        <li>
+          <a class="social-dot" href={`mailto:${email}`} aria-label="Email" title={email}>
+            <Icon name="social-envelope" class="size-4 text-white" />
+          </a>
+        </li>
       </ul>
-    </nav>
+    </div>
 
-    <nav aria-labelledby="footer-legal">
-      <h2 id="footer-legal" class="text-sm font-medium text-muted">
-        Legal
-      </h2>
-      <ul class="mt-4 grid gap-2.5">
-        {legalLinks.map((link) => (
-          <li>
-            <a class="footer-link" href={link.href}>
-              {link.label}
-            </a>
-          </li>
-        ))}
-        {siteConfig.cookieConsent.enabled && (
-          <li>
-            <button type="button" class="footer-link text-left" data-cookie-preferences data-needs-js>
-              Cookie preferences
-            </button>
-          </li>
-        )}
-      </ul>
-    </nav>
-  </div>
+    <hr class="mt-10 border-white/12" />
 
-  <div class="shell flex flex-wrap items-center justify-between gap-4 border-t border-line py-6 text-sm text-muted">
-    <p>
-      &copy; {year} {siteConfig.author.name}. All rights reserved.
-    </p>
-    <a href="#content" class="inline-flex items-center gap-1.5 hover:text-ink">
-      Back to top
-      <Icon name="arrow-up" class="size-3.5" />
-    </a>
+    <div class="mt-6 flex flex-col gap-3 text-[0.64rem] leading-relaxed text-white/45 sm:flex-row sm:items-center sm:justify-between">
+      <p>
+        &copy; {year} {siteConfig.author.name}. Todos los derechos reservados.
+      </p>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <nav aria-label="Legal">
+          <ul class="flex flex-wrap items-center gap-x-5 gap-y-2">
+            {legalLinks.map((link) => (
+              <li>
+                <a class="footer-legal" href={link.href}>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+            {siteConfig.cookieConsent.enabled && (
+              <li>
+                <button type="button" class="footer-legal text-left" data-cookie-preferences data-needs-js>
+                  Cookies
+                </button>
+              </li>
+            )}
+          </ul>
+        </nav>
+        <a href="#content" class="inline-flex items-center gap-1.5 transition-colors hover:text-white">
+          Volver arriba
+          <Icon name="arrow-up" class="size-3" />
+        </a>
+      </div>
+    </div>
   </div>
 </footer>
 
 <style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.035em;
+    white-space: nowrap;
+    transition: opacity 160ms var(--ease-out);
+  }
+
+  .brand:hover {
+    opacity: 0.65;
+  }
+
   .footer-link {
-    color: var(--ink);
-    transition: color 160ms ease;
+    color: #b4b4b4;
+    font-size: 0.72rem;
+    font-weight: 500;
+    transition: color 160ms var(--ease-out);
   }
 
   .footer-link:hover {
-    color: var(--muted);
+    color: #ffffff;
   }
 
-  .closing-grid {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.09) 1px, transparent 0);
-    background-size: 24px 24px;
-    mask-image: radial-gradient(ellipse 70% 90% at 100% 100%, #000 10%, transparent 70%);
+  .footer-legal {
+    color: inherit;
+    transition: color 160ms var(--ease-out);
+  }
+
+  .footer-legal:hover {
+    color: #ffffff;
+  }
+
+  .social-dot {
+    display: grid;
+    place-items: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.08);
+    transition: background-color 160ms var(--ease-out);
+  }
+
+  .social-dot:hover {
+    background: rgb(255 255 255 / 0.18);
   }
 </style>

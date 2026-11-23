@@ -14,40 +14,42 @@ const { project, eager = false, headingLevel: Heading = 'h3' } = Astro.props;
 const { title, client, year, services, cover, coverAlt, tint } = project.data;
 ---
 
-<article class="project-card reveal relative" style={`--tint: ${tint}`}>
-  <div class="tint-panel relative aspect-5/4 overflow-hidden rounded-card">
+<article class="project-card relative" style={`--tint: ${tint}`}>
+  <div class="tint-panel relative aspect-4/3 overflow-hidden rounded-card border border-line">
     <Image
       src={cover}
       alt={coverAlt}
-      widths={[640, 960, 1280, 1600, 1920]}
-      sizes="(min-width: 80rem) 44rem, (min-width: 48rem) 55vw, 110vw"
+      widths={[640, 960, 1280, 1600]}
+      sizes="(min-width: 48rem) 45vw, 100vw"
       quality={90}
       loading={eager ? 'eager' : 'lazy'}
-      class="project-shot shot absolute top-[12%] left-[8%] w-[115%] max-w-none"
+      class="absolute inset-0 size-full object-cover object-top"
     />
-    <span
-      class="project-badge absolute top-5 right-5 grid size-11 place-items-center rounded-full bg-inverse text-on-inverse"
-      aria-hidden="true"
-    >
-      <Icon name="arrow-up-right" class="size-5" />
-    </span>
   </div>
-  <div class="mt-5 flex items-center justify-between gap-4 text-sm text-muted">
-    <span class="font-medium text-ink">{client}</span>
-    <span>{year}</span>
+
+  <div class="mt-5 flex items-baseline justify-between gap-4 text-sm text-muted">
+    <span class="font-mono text-[0.7rem]">{client}</span>
+    <span class="font-mono text-[0.7rem]">{year}</span>
   </div>
-  <Heading class="mt-2 text-title">
-    <a href={projectHref(project)} class="after:absolute after:inset-0 focus-visible:outline-none">
+
+  <Heading class="serif mt-2 text-title">
+    <a href={projectHref(project)} class="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none">
       {title}
     </a>
   </Heading>
+
   {services.length > 0 && (
-    <ul class="mt-4 flex flex-wrap gap-1.5" aria-label="Services">
+    <ul class="mt-4 flex flex-wrap gap-1.5" aria-label="Tecnologías">
       {services.slice(0, 3).map((service) => (
         <li class="chip">{service}</li>
       ))}
     </ul>
   )}
+
+  <p class="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+    Ver caso de estudio
+    <Icon name="arrow-right" class="icon-nudge size-4 text-muted" />
+  </p>
 </article>
 
 <style>
@@ -57,33 +59,21 @@ const { title, client, year, services, cover, coverAlt, tint } = project.data;
     border-radius: var(--radius-card);
   }
 
-  .project-badge {
-    opacity: 0;
-    scale: 0.6;
+  .tint-panel {
+    transition: border-color 200ms var(--ease-out);
   }
 
-  .project-card:hover .project-badge,
-  .project-card:has(a:focus-visible) .project-badge {
-    opacity: 1;
-    scale: 1;
+  .icon-nudge {
+    transition: transform 200ms var(--ease-out);
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .project-shot {
-      transform-origin: 0 0;
-      transition: scale 700ms var(--ease-out-expo);
+  @media (hover: hover) {
+    .project-card:hover .tint-panel {
+      border-color: var(--line-strong);
     }
 
-    .project-badge {
-      transition:
-        opacity 250ms ease,
-        scale 450ms var(--ease-out-expo);
-    }
-
-    @media (hover: hover) {
-      .project-card:hover .project-shot {
-        scale: 1.04;
-      }
+    .project-card:hover .icon-nudge {
+      transform: translateX(3px);
     }
   }
 </style>

@@ -1,0 +1,53 @@
+---
+title: OCR con IA que convierte facturas y documentos en un Excel consolidado
+client: Document IA
+tagline: OCR con IA
+summary: Aplicación web para procesar documentos en lote, extraer datos a partir de plantillas propias, revisarlos y exportar un Excel consolidado.
+year: 2025
+role: Desarrollo Full Stack
+services: [Next.js, Gemini, Supabase, Cloudflare R2]
+how:
+  - >-
+    El flujo se ordena en cuatro pasos: cargar, procesar, revisar y exportar. El usuario sube imágenes o PDF de a varios, el sistema los interpreta y devuelve los campos de la plantilla elegida ya completos.
+  - >-
+    La revisión es lado a lado: el documento original con zoom y rotación a la izquierda, los campos detectados a la
+    derecha. Cada plantilla define sus propios campos, tipos y validaciones, y el resultado se consolida en un Excel
+    listo para descargar.
+highlights:
+  - Extracción estructurada con Gemini por plantilla
+  - Revisión lado a lado con validaciones
+  - Exportación XLSX consolidada
+team: Producto propio, desarrollo individual
+cover: ./cover.jpg
+coverAlt: Dashboard de Document IA con documentos procesados, pendientes de revisión y libros Excel exportados, más la tabla de documentos recientes
+tint: '#d6e7e2'
+order: 3
+featured: true
+---
+
+import review from './review.jpg';
+
+<div class="case-copy">
+
+Document IA nace de un problema concreto: cientos de facturas y comprobantes que terminan a mano en una planilla. La aplicación toma esos documentos, los lee con inteligencia artificial y devuelve los datos ya ordenados en Excel.
+
+## Mi rol
+
+Me encargué del producto completo: modelo de datos, flujo de carga y procesamiento, integración con la API de Gemini, pantalla de revisión y generación del Excel. También definí las plantillas, que son la pieza que hace flexible al sistema: cada usuario arma la suya con los campos que necesita.
+
+## Stack
+
+- **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS 4 y TypeScript.
+- **Backend:** Supabase (Auth, PostgreSQL con RLS), Cloudflare R2 para archivos privados, API de Gemini para extracción estructurada y un worker en Node para el procesamiento asíncrono.
+
+</div>
+
+<div class="case-media">
+
+<Figure
+  src={review}
+  alt="Pantalla de revisión de Document IA: la factura original a la izquierda y los campos detectados por la IA, editables, a la derecha"
+  caption="Revisión lado a lado: el documento original y los campos extraídos, listos para corregir antes de exportar."
+/>
+
+</div>

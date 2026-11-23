@@ -8,21 +8,54 @@ interface Props {
   caption?: string;
   /** Drop the tinted frame around the image. */
   plain?: boolean;
+  /**
+   * Case-study slides sit side by side in a horizontal deck, so an off-screen
+   * image is already two viewports away — lazy loading leaves a blank frame
+   * when the reader swipes to it.
+   */
+  loading?: 'lazy' | 'eager';
 }
 
-const { src, alt, caption, plain = false } = Astro.props;
+const { src, alt, caption, plain = false, loading = 'eager' } = Astro.props;
 ---
 
 <figure class="not-prose">
   <div class:list={['overflow-hidden rounded-card', !plain && 'tint-panel p-[4%] sm:p-[6%]']}>
-    <Image
-      {src}
-      {alt}
-      widths={[800, 1200, 1600, 2400, 3200]}
-      sizes="(min-width: 80rem) 68rem, 90vw"
-      quality={90}
-      class:list={['w-full', !plain && 'shot']}
-    />
+    <button
+      type="button"
+      class="zoom-trigger"
+      data-zoom
+      data-zoom-src={src.src}
+      data-zoom-alt={alt}
+      aria-label={`Ampliar imagen: ${alt}`}
+    >
+      <Image
+        {src}
+        {alt}
+        widths={[800, 1200, 1600, 2400, 3200]}
+        sizes="(min-width: 80rem) 68rem, 90vw"
+        quality={90}
+        {loading}
+        class:list={['w-full', !plain && 'shot']}
+      />
+    </button>
   </div>
   {caption && <figcaption class="mx-auto mt-4 max-w-[44rem] text-[0.95rem] text-muted">{caption}</figcaption>}
 </figure>
+
+<style>
+  .zoom-trigger {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .zoom-trigger:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: var(--radius-control);
+  }
+</style>

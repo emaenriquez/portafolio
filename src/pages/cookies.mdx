@@ -1,29 +1,29 @@
 ---
 layout: ../layouts/LegalLayout.astro
-title: Cookie Policy
-description: What this site stores in your browser, how your consent is saved, and how optional analytics and marketing are handled.
-updated: 2026-10-08
+title: Política de cookies
+description: Qué guarda este sitio en tu navegador, cómo se guarda tu consentimiento y cómo se manejan la analítica y el marketing opcionales.
+updated: 2026-11-08
 ---
 
-## What this site stores
+## Qué guarda este sitio
 
-This site stores two small preference records in your browser: your color theme and your cookie choices. They are saved in `localStorage`, are not sent with page requests, and only remember your choices in this browser.
+Este sitio guarda dos registros de preferencias en tu navegador: tu tema de color y tus elecciones de cookies. Se almacenan en `localStorage`, no se envían con las peticiones de página y solo recuerdan tus elecciones en este navegador.
 
-| Key                    | Type          | Category  | Purpose                                                               |
-| ---------------------- | ------------- | --------- | --------------------------------------------------------------------- |
-| `maria-theme`          | Local storage | Essential | Remembers whether you picked light or dark mode                       |
-| `maria-cookie-consent` | Local storage | Essential | Remembers your consent choices, when you made them, and their version |
+| Clave                  | Tipo                 | Categoría | Finalidad                                                                  |
+| ---------------------- | -------------------- | --------- | -------------------------------------------------------------------------- |
+| `maria-theme`          | Almacenamiento local | Esencial  | Recuerda si elegiste el modo claro u oscuro                                |
+| `maria-cookie-consent` | Almacenamiento local | Esencial  | Recuerda tus elecciones de consentimiento, cuándo las hiciste y su versión |
 
-## Consent categories
+## Categorías de consentimiento
 
-Essential storage is always on, because it remembers the two choices above. Analytics and marketing are optional and stay off until you allow them.
+El almacenamiento esencial siempre está activo, porque recuerda las dos elecciones anteriores. La analítica y el marketing son opcionales y permanecen desactivados hasta que los permitas.
 
-No analytics or marketing tools are connected by default. The categories exist so tools added later only load with your consent.
+Por defecto no hay herramientas de analítica ni de marketing conectadas. Las categorías existen para que las herramientas que se agreguen más adelante solo se carguen con tu consentimiento.
 
-## Changing your preferences
+## Cambiar tus preferencias
 
-You can change your choices at any time with the **Cookie preferences** button in the footer, or <button type="button" class="link" data-cookie-preferences>open your cookie preferences</button> now.
+Podés cambiar tus elecciones en cualquier momento con el botón **Preferencias de cookies** del pie de página, o <button type="button" class="link" data-cookie-preferences>abrir tus preferencias de cookies</button> ahora mismo.
 
-## For site owners
+## Para responsables del sitio
 
-The consent script exposes `window.mariaCookieConsent` so optional scripts can check whether analytics or marketing is allowed before they load, and dispatches a `maria:cookieConsentChanged` event whenever a visitor saves new choices.
+El script de consentimiento expone `window.mariaCookieConsent` para que los scripts opcionales puedan comprobar si la analítica o el marketing están permitidos antes de cargarse, y emite un evento `maria:cookieConsentChanged` cada vez que una persona guarda nuevas elecciones.

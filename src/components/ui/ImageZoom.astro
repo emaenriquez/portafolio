@@ -1,0 +1,112 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  /** Accessible name for the dialog. */
+  label?: string;
+}
+
+const { label = 'Imagen ampliada' } = Astro.props;
+---
+
+<dialog class="zoom" data-zoom-dialog aria-label={label}>
+  <button type="button" class="zoom-close" data-zoom-close aria-label="Cerrar imagen ampliada">
+    <Icon name="x" class="size-5" />
+  </button>
+  <img class="zoom-image" data-zoom-image alt="" />
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-zoom-dialog]');
+  const image = dialog?.querySelector<HTMLImageElement>('[data-zoom-image]');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-zoom-close]');
+  let opener: HTMLElement | null = null;
+
+  if (dialog && image) {
+    // Any `[data-zoom]` trigger on the page opens the dialog with its own image.
+    document.addEventListener('click', (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      const trigger = target?.closest<HTMLElement>('[data-zoom]');
+      const src = trigger?.dataset.zoomSrc;
+
+      if (!trigger || !src) return;
+
+      event.preventDefault();
+      opener = trigger;
+      image.src = src;
+      image.alt = trigger.dataset.zoomAlt ?? '';
+
+      if (!dialog.open) dialog.showModal();
+    });
+
+    closeButton?.addEventListener('click', () => dialog.close());
+
+    // A click on the backdrop lands on the dialog itself.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    dialog.addEventListener('close', () => {
+      image.removeAttribute('src');
+      image.alt = '';
+      opener?.focus();
+      opener = null;
+    });
+  }
+</script>
+
+<style>
+  .zoom {
+    max-width: 94vw;
+    max-height: 92vh;
+    /* Tailwind's reset zeroes the UA `margin: auto` that centers a modal dialog. */
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .zoom::backdrop {
+    background: oklch(12% 0.008 70 / 0.9);
+  }
+
+  .zoom-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 94vw;
+    max-height: 92vh;
+    border-radius: var(--radius-panel);
+    background: var(--surface);
+    box-shadow: 0 24px 60px -20px oklch(0% 0 0 / 0.55);
+  }
+
+  .zoom-close {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid oklch(100% 0 0 / 0.22);
+    border-radius: var(--radius-control);
+    background: oklch(22% 0.01 70 / 0.92);
+    color: oklch(96% 0.008 85);
+    transition:
+      background-color 160ms var(--ease-out),
+      border-color 160ms var(--ease-out);
+  }
+
+  .zoom-close:hover {
+    border-color: oklch(100% 0 0 / 0.45);
+    background: oklch(30% 0.012 70 / 0.96);
+  }
+
+  .zoom-close:focus-visible {
+    outline: 2px solid oklch(96% 0.008 85);
+    outline-offset: 3px;
+  }
+</style>

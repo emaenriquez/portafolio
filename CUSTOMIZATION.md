@@ -33,15 +33,14 @@ The logo mark is [src/components/ui/Logomark.astro](./src/components/ui/Logomark
 
 The homepage is assembled in [src/pages/index.astro](./src/pages/index.astro) from sections in [src/components/home](./src/components/home), with copy in [src/config/home.ts](./src/config/home.ts):
 
-| Section        | Component                               | Config key     |
-| -------------- | --------------------------------------- | -------------- |
-| Hero and facts | `Hero.astro`                            | `hero`         |
-| Case studies   | `index.astro`, `work/ProjectCard.astro` | `work`         |
-| Services       | `Services.astro`                        | `services`     |
-| Testimonials   | `Testimonials.astro`                    | `testimonials` |
-| Closing panel  | `chrome/SiteFooter.astro`               | `closing`      |
+| Section        | Component                                  | Config key |
+| -------------- | ------------------------------------------ | ---------- |
+| Hero and facts | `Hero.astro`                               | `hero`     |
+| Case studies   | `index.astro`, `work/ProjectFeature.astro` | `work`     |
+| Services       | `Services.astro`                           | `services` |
+| Closing panel  | `chrome/SiteFooter.astro`                  | `closing`  |
 
-The hero headline is `greeting`, `title`, then `highlight`, which is set in the serif italic. `work.limit` sets how many case studies appear; projects with `featured: true` come first. Service icons are file names from [src/icons/lucide](./src/icons/lucide). Remove a component from `index.astro` to drop its section.
+The hero headline is `greeting`, `title`, then `highlight`, which is drawn with the amber marker (`.mark`). `work.limit` sets how many case studies appear; projects with `featured: true` come first. The homepage uses `ProjectFeature` for its alternating rows; the `/work/` index uses `ProjectCard` for its grid. Remove a component from `index.astro` to drop its section.
 
 The closing panel appears above the footer on every page except the legal pages and the 404. Pass `closing={false}` to `BaseLayout` to hide it on any other page.
 
@@ -85,10 +84,13 @@ url: https://example.com
 | `year`     | Required. Shown on cards and in the details row                                  |
 | `role`     | Required. Shown in the details row                                               |
 | `services` | Chips on the case study; the first three also appear on cards                    |
+| `how`      | Paragraphs shown next to the showcase media, under "Cómo funciona"               |
 | `duration` | Optional, shown in the details row                                               |
 | `team`     | Optional, shown in the details row                                               |
 | `cover`    | Required. The card image, the case study hero, and the source of its social card |
 | `coverAlt` | Required. Alt text for the cover                                                 |
+| `video`    | Optional. A video in `public/` shown on the showcase slide instead of the cover  |
+| `github`   | Optional. A link to the source code, shown as a button on the cover slide        |
 | `tint`     | The panel color behind the cover and figures, as a six-digit hex color           |
 | `order`    | Position on the homepage and work index; lower comes first. Defaults to `100`    |
 | `featured` | Featured projects come first on the homepage                                     |
@@ -123,7 +125,7 @@ import transcriptViewer from './transcript-viewer.webp';
 />
 ```
 
-- `Figure` frames an image in the project's tint, full width. Add `plain` to drop the frame.
+- `Figure` frames an image in the project's tint, full width, and opens it in a lightbox on click. Add `plain` to drop the frame.
 - `Stats` shows two or three outcome numbers in a row.
 - A plain Markdown image, `![Alt text](./image.webp)`, is shown full width with rounded corners.
 - A blockquote is set as a large serif pull quote.
@@ -131,11 +133,19 @@ import transcriptViewer from './transcript-viewer.webp';
 
 The components live in [src/components/mdx](./src/components/mdx). To add your own, create an `.astro` component there and add it to [src/components/mdx/index.ts](./src/components/mdx/index.ts).
 
+### Slides and lightbox
+
+A case study is a horizontal deck of four slides: the cover with its details, the showcase media next to `how`, the MDX body, and links to other projects. The deck is assembled in [src/pages/work/[slug].astro](./src/pages/work/[slug].astro).
+
+Case studies render with `footer={false}`, so they fill the viewport with no closing panel or footer. Pass the same prop to [BaseLayout](./src/layouts/BaseLayout.astro) to drop the footer on any other page.
+
+Images open in a lightbox on click, with a close button and <kbd>Esc</kbd>. It applies to every `Figure` and to the cover when a project has no `video`. The dialog lives in [src/components/ui/ImageZoom.astro](./src/components/ui/ImageZoom.astro) and is triggered by any element with `data-zoom`, `data-zoom-src`, and `data-zoom-alt`.
+
 ## About and Resume
 
-The About page copy lives in [src/config/about.ts](./src/config/about.ts): the headline, intro, the editorial sections, and the principles. Replace the portrait at [src/assets/images/maria.webp](./src/assets/images/maria.webp), which is also used in the homepage availability badge, and update `portraitAlt`.
+The About page copy lives in [src/config/about.ts](./src/config/about.ts): the headline, intro, the editorial sections, and the principles. Replace the portrait at [src/assets/images/emanuel.png](./src/assets/images/emanuel.png), which is also used in the homepage availability badge, and update `portraitAlt`.
 
-The Resume page reads [src/config/resume.ts](./src/config/resume.ts): the snapshot, experience, capabilities, education, and tools. Tool logos are SVG files in [src/assets/logos](./src/assets/logos); set `dark: true` for a logo that needs a dark tile. To offer a PDF, put it in `public/` and set `siteConfig.resumePdf` to its path, for example `/maria-resume.pdf`.
+The Resume page reads [src/config/resume.ts](./src/config/resume.ts): the snapshot, experience, capabilities, and education. Each experience entry can add a `highlights` array for a bullet list. To offer a PDF, put it in `public/` and set `siteConfig.resumePdf` to its path, for example `/emanuel-resume.pdf`.
 
 ## Legal Pages
 
@@ -171,24 +181,27 @@ Colors, shadows, the header height, and the page width are CSS custom properties
 
 ```css
 :root {
-  --canvas: #fafaf7;
-  --surface: #ffffff;
-  --sunken: #f2f2ed;
-  --line: #e6e5df;
-  --ink: #121211;
-  --body: #3b3b38;
-  --muted: #6a6964;
-  --accent: #d4f84a;
-  --on-accent: #121211;
+  --canvas: oklch(97.2% 0.009 85); /* warm paper */
+  --surface: oklch(99.4% 0.005 85);
+  --sunken: oklch(94.4% 0.013 84);
+  --line: oklch(89.5% 0.012 82);
+  --line-strong: oklch(80% 0.016 78);
+  --ink: oklch(23% 0.012 70); /* graphite */
+  --body: oklch(38% 0.013 70);
+  --muted: oklch(52% 0.012 72);
+  --accent: oklch(78% 0.15 68); /* amber */
+  --accent-strong: oklch(72% 0.16 62);
+  --accent-ink: oklch(45% 0.11 55); /* amber that passes as text */
+  --on-accent: oklch(23% 0.012 70);
   /* ... */
 }
 ```
 
-To rebrand, change `--accent` and `--accent-strong`, its hover state. `--on-accent` is the text color on top of the accent and needs enough contrast against it. The `--night` tokens color the closing panel, which stays dark in both modes.
+To rebrand, change `--accent` and `--accent-strong`, its hover state. `--on-accent` is the text color on top of the accent and needs enough contrast against it, and `--accent-ink` is the darker accent used for links and small text. The `--night` tokens color the closing panel, which stays dark in both modes.
 
-The tokens are also Tailwind colors, so `bg-sunken`, `text-muted`, `border-line`, and `bg-accent` work in markup. The type scale (`text-display`, `text-headline`, `text-section`, `text-title`, `text-lead`) is defined in the `@theme` block of the same file.
+The tokens are also Tailwind colors, so `bg-sunken`, `text-muted`, `border-line`, and `bg-accent` work in markup. The type scale (`text-display`, `text-headline`, `text-section`, `text-title`, `text-lead`) is defined in the `@theme` block of the same file, together with `--radius-card`, `--radius-panel`, `--radius-control`, and `--radius-chip`.
 
-Shared pieces such as `.btn`, `.eyebrow`, `.serif`, `.chip`, and the case study `.prose` styles are in the components layer of `global.css`.
+Shared pieces such as `.btn`, `.eyebrow`, `.serif`, `.mark`, `.chip`, and the case study `.prose` styles are in the components layer of `global.css`. `.mark` draws the amber marker stroke under a key phrase: `<span class="mark">…</span>`.
 
 ## Light and Dark Mode
 
@@ -198,7 +211,7 @@ Dark mode is the `dark` class on `<html>`. Use the `dark:` variant in markup, or
 
 ## Fonts
 
-Hanken Grotesk and Instrument Serif are self-hosted in [public/fonts](./public/fonts) and declared at the top of `global.css`. Only the serif italic is bundled, since it is only used for accents. To change them, replace the files, update the `@font-face` rules, set `--font-sans` and `--font-serif` in the `@theme` block, and update the preloaded file in `BaseLayout.astro`.
+Hanken Grotesk and Instrument Serif are self-hosted in [public/fonts](./public/fonts) and declared at the top of `global.css`. Only the upright (roman) cut of Instrument Serif is declared, since the serif is used for display text and never in italics. To change them, replace the files, update the `@font-face` rules, set `--font-sans` and `--font-serif` in the `@theme` block, and update the preloaded files in `BaseLayout.astro`.
 
 ## Icons
 

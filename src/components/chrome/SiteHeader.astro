@@ -1,73 +1,75 @@
 ---
 import ThemeToggle from '@/components/chrome/ThemeToggle.astro';
 import Icon from '@/components/ui/Icon.astro';
-import Logomark from '@/components/ui/Logomark.astro';
 import { navigation, siteConfig } from '@/config/site';
 
 const path = Astro.url.pathname;
-const current = (href: string) => (path === href ? 'page' : path.startsWith(href) ? 'true' : undefined);
+const brand = siteConfig.author.name.replace(/\s+/g, '').toUpperCase();
+
+/* Hash links (`/#servicios`) never mark themselves as the current page. */
+const current = (href: string) => {
+  if (href.includes('#')) return undefined;
+  return path === href ? 'page' : path.startsWith(href) ? 'true' : undefined;
+};
 ---
 
-<header class="site-header sticky top-0 z-40 h-(--header-h) border-b border-transparent bg-canvas">
-  <div class="shell flex h-full items-center gap-4">
-    <a href="/" class="flex items-center gap-2.5 rounded-lg text-[1.15rem] font-semibold tracking-[-0.03em]">
-      <Logomark />
-      <span>{siteConfig.name}</span>
-      <span class="sr-only">, home</span>
+<header class="site-header">
+  <div class="shell flex h-(--header-h) items-center justify-between gap-4">
+    <a href="/" class="brand">
+      <span aria-hidden="true">&lt;{brand}&gt;</span>
+      <span class="sr-only">{siteConfig.author.name}, inicio</span>
     </a>
 
-    <nav aria-label="Main" class="ml-auto hidden md:block">
-      <ul class="flex items-center gap-1">
-        {navigation.map((link) => (
-          <li>
-            <a href={link.href} class="nav-link" aria-current={current(link.href)}>
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <div class="flex items-center gap-5 lg:gap-8">
+      <nav aria-label="Principal" class="hidden md:block">
+        <ul class="flex items-center gap-7 lg:gap-9">
+          {navigation.map((link) => (
+            <li>
+              <a href={link.href} class="nav-link" aria-current={current(link.href)}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-    <div class="ml-auto flex items-center gap-1.5 md:ml-2">
       <ThemeToggle />
-      <a class="btn btn-primary btn-sm ml-1 hidden sm:inline-flex" href={siteConfig.action.href}>
-        {siteConfig.action.label}
-      </a>
+
       <button
         type="button"
-        class="grid size-10 place-items-center rounded-full hover:bg-sunken md:hidden"
+        class="grid size-9 place-items-center rounded-full text-ink transition-colors hover:bg-sunken md:hidden"
         commandfor="mobile-nav"
         command="show-modal"
         aria-haspopup="dialog"
-        aria-label="Menu"
+        aria-label="Abrir menú"
       >
         <Icon name="menu" class="size-5" />
       </button>
     </div>
   </div>
 
-  <dialog id="mobile-nav" aria-label="Menu" class="mobile-nav md:hidden">
+  <dialog id="mobile-nav" aria-label="Menú" class="mobile-nav md:hidden">
     <div class="shell flex h-(--header-h) items-center justify-between">
-      <a href="/" class="flex items-center gap-2.5 text-[1.15rem] font-semibold tracking-[-0.03em]">
-        <Logomark />
-        <span>{siteConfig.name}</span>
-        <span class="sr-only">, home</span>
+      <a href="/" class="brand">
+        <span aria-hidden="true">&lt;{brand}&gt;</span>
+        <span class="sr-only">{siteConfig.author.name}, inicio</span>
       </a>
       <button
         type="button"
-        class="grid size-10 place-items-center rounded-full hover:bg-sunken"
+        class="grid size-10 place-items-center rounded-full text-ink hover:bg-sunken"
         commandfor="mobile-nav"
         command="close"
-        aria-label="Close menu"
+        aria-label="Cerrar menú"
       >
         <Icon name="x" class="size-5" />
       </button>
     </div>
-    <nav aria-label="Mobile" class="shell mt-4">
+
+    <nav aria-label="Móvil" class="shell mt-8">
       <ul class="grid">
         <li>
           <a href="/" class="mobile-link" aria-current={path === '/' ? 'page' : undefined}>
-            Home
+            Inicio
           </a>
         </li>
         {navigation.map((link) => (
@@ -79,10 +81,13 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
         ))}
       </ul>
     </nav>
-    <div class="shell mt-8">
-      <a class="btn btn-primary w-full" href={siteConfig.action.href}>
+
+    <div class="shell mt-10 grid gap-4">
+      <a class="btn btn-accent btn-pill" href={siteConfig.action.href}>
         {siteConfig.action.label}
+        <Icon name="arrow-up-right" class="icon-nudge-diagonal size-4" />
       </a>
+      <p class="text-sm text-muted">{siteConfig.author.role}</p>
     </div>
   </dialog>
 </header>
@@ -105,38 +110,41 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
 </script>
 
 <style>
-  @supports (animation-timeline: scroll()) {
-    .site-header {
-      animation: header-line linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 4rem;
-    }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    transition: opacity 160ms var(--ease-out);
   }
 
-  @keyframes header-line {
-    to {
-      border-bottom-color: var(--line);
-    }
+  .brand:hover {
+    opacity: 0.6;
   }
 
   .nav-link {
     display: inline-flex;
     align-items: center;
-    min-height: 2.5rem;
-    padding: 0.4rem 0.9rem;
-    border-radius: 999px;
-    color: var(--body);
-    font-size: 0.95rem;
+    min-height: 2.25rem;
+    color: var(--ink);
+    font-size: 0.75rem;
     font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.45em;
     transition:
-      color 160ms ease,
-      background-color 160ms ease;
+      color 160ms var(--ease-out),
+      text-decoration-color 160ms var(--ease-out);
   }
 
   .nav-link:hover,
   .nav-link[aria-current] {
-    color: var(--ink);
-    background: var(--sunken);
+    text-decoration-color: currentColor;
   }
 
   .mobile-nav {
@@ -158,23 +166,25 @@ const current = (href: string) => (path === href ? 'page' : path.startsWith(href
     align-items: center;
     min-height: 3.75rem;
     border-bottom: 1px solid var(--line);
-    font-size: 1.75rem;
-    font-weight: 500;
+    font-size: clamp(1.6rem, 6vw, 2.1rem);
+    font-weight: 800;
+    line-height: 1;
     letter-spacing: -0.03em;
+    text-transform: uppercase;
   }
 
   .mobile-link[aria-current] {
     text-decoration: underline;
     text-decoration-color: var(--accent);
-    text-decoration-thickness: 3px;
-    text-underline-offset: 0.25em;
+    text-decoration-thickness: 0.12em;
+    text-underline-offset: 0.18em;
   }
 
   @media (prefers-reduced-motion: no-preference) {
     .mobile-nav {
       transition:
-        opacity 220ms ease,
-        translate 320ms var(--ease-out-expo),
+        opacity 220ms var(--ease-out),
+        translate 320ms var(--ease-out),
         display 320ms allow-discrete,
         overlay 320ms allow-discrete;
     }
