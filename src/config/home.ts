@@ -2,7 +2,7 @@ export const hero = {
   title: 'Desarrollador Full Stack',
   name: 'Emanuel Enriquez',
   stack: ['React.js', 'Next.js', 'TypeScript', 'Node.js', 'NestJS', 'PostgreSQL'],
-  text: 'Desarrollador Full Stack + IA con más de 1,5 años de experiencia construyendo productos de punta a punta: bases de datos complejas, APIs en Node.js y NestJS, e interfaces en React. Participé en MVPs y en sistemas de OCR en producción.',
+  text: 'Desarrollador Full Stack + IA con más de 2 años de experiencia construyendo productos de punta a punta: bases de datos complejas, APIs en Node.js y NestJS, e interfaces en React. Participé en MVPs y en sistemas de OCR en producción.',
   primary: { label: 'Contactarme', href: '/#contacto' },
   secondary: { label: 'Ver proyectos', href: '/#proyectos' },
 };
@@ -16,7 +16,7 @@ export const aboutSection = {
   ],
   facts: [
     { label: 'Basado en', value: 'Argentina' },
-    { label: 'Experiencia', value: '1,5+ años · Full Stack' },
+    { label: 'Experiencia', value: '2 años · Full Stack' },
     { label: 'Formación', value: 'Tecnicatura en Software · UNCUYO' },
     { label: 'Actualmente', value: 'Disponible para nuevos proyectos' },
   ],
@@ -24,7 +24,6 @@ export const aboutSection = {
 
 export const experienceSection = {
   eyebrow: '02 / Experiencia',
-  caption: '2025 — presente',
 };
 
 export const work = {
